@@ -41,15 +41,17 @@ var dupNumber = 2, // set number of duplicates
 var myDoc = app.activeDocument;
 
 var thisLayer = myDoc.activeLayer;
-var layerNames = ["1", "2"];
+var layerNames = ["sm", "lg"];
 var itemNames = ["front", "back"]; // item/obj names cause issues. Try having a text obj named "back" or "Back". If this is found first in any of the for-loops, things mess up. Investigate!
 
 var selectedArt = null;
 
 for(var i = 0; i < 2; i++) {
+    var layerBaseName;
     if(selectedArt == null) {
         selectedArt = myDoc.selection[0];
-        selectedArt.name = selectedArt.textRange.contents;
+        layerBaseName = selectedArt.textRange.contents;
+        selectedArt.name = layerBaseName;
     } else {
         myDoc.selection = null;
         selectedArt.selected = true;
@@ -98,17 +100,17 @@ for(var i = 0; i < 2; i++) {
     items[0].selected = true;
     app.executeMenuCommand("expandStyle");
 
-    var frontLayer = myDoc.layers.add();
-    frontLayer.name = "Layer" + layerNames[i];
-
-    var frontGroup = myDoc.groupItems.add();
-    frontGroup.name = "group";
 
     for(var j = 0; j < items.length; j++) {
+ 
         var item = thisLayer.pageItems.getByName(itemNames[j]);
         var style = app.activeDocument.graphicStyles.getByName(itemNames[j]);
         style.applyTo(item);
-        item.move(frontGroup, ElementPlacement.PLACEATEND);
+        
+        var frontLayer = myDoc.layers.add();
+        frontLayer.name = layerBaseName + "_" + layerNames[i] + "_" + itemNames[j];
+        
+        item.move(frontLayer, ElementPlacement.PLACEATEND);
         /*
         var visBounds = item.visibleBounds;
         var x = visBounds[0];
