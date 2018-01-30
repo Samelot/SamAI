@@ -45,6 +45,7 @@ var layerNames = ["text"];
 var itemNames = ["back", "front"]; // item/obj names cause issues. Try having a text obj named "back" or "Back". If this is found first in any of the for-loops, things mess up. Investigate!
 
 var selectedArt = null;
+var prevItem = null;
 
 for(var i = 0; i < 1; i++) {
     var layerBaseName;
@@ -73,14 +74,14 @@ for(var i = 0; i < 1; i++) {
         var compoundPaths = textOutline.compoundPathItems; // each letter is a compound path  
 
         textOutline.selected = true;
-        textOutline.name = itemNames[j];
+        textOutline.name = layerBaseName + "_" + itemNames[j];
         app.executeMenuCommand("compoundPath"); // merge to single compound path
     }
 
     var items = [];
-    
+
     for(var j = 0; j < itemNames.length; j++) {
-        items[j] = thisLayer.pageItems.getByName(itemNames[j]);
+        items[j] = thisLayer.pageItems.getByName(layerBaseName + "_" + itemNames[j]);
     }
     
     offset = 1;
@@ -95,32 +96,22 @@ for(var i = 0; i < 1; i++) {
     items[1].selected = true;
     app.executeMenuCommand("expandStyle");
 
-
     for(var j = 0; j < items.length; j++) {
  
-        var item = thisLayer.pageItems.getByName(itemNames[j]);
+        var item = thisLayer.pageItems.getByName(layerBaseName + "_" + itemNames[j]);
+
         var style = app.activeDocument.graphicStyles.getByName(itemNames[j]);
         style.applyTo(item);
         
-        var frontLayer = myDoc.layers.add();
-        frontLayer.name = layerBaseName + "_" + layerNames[i] + "_" + itemNames[j];
+        //var frontLayer = myDoc.layers.add();
+        //frontLayer.name = layerBaseName + "_" + layerNames[i] + "_" + itemNames[j];
         
-        item.move(frontLayer, ElementPlacement.PLACEATEND);
-        
+        if(prevItem != null) {
+            item.move(prevItem, ElementPlacement.PLACEBEFORE);
+        }
+
+        prevItem = item;
     }
 }
 
 myDoc.selection = null;
-
-var newLayer = myDoc.layers[layerBaseName + "_" + layerNames[0] + "_" + itemNames[0]];
-var artboardItem = newLayer.pageItems[0];
-
-var visBounds = artboardItem.visibleBounds;
-var x = visBounds[0];
-var y = visBounds[1];
-var width = Math.abs(x - visBounds[2]);
-var height = Math.abs(y - visBounds[3]);
-//alert(width + ", " + height);
-//alert(visBounds);
-artboard = myDoc.artboards.add(newRect(x,-y,width,height));
-artboard.name = "new name";
