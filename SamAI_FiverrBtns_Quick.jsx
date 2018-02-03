@@ -1,35 +1,5 @@
 #target illustrator
 
-function getLeadItem(glPage) {   //glPage is the Page Item  
-    if (glPage.typename == 'CompoundPathItem'){  
-        return glPage.pathItems[0];   //returns the first path item of the compound path (...but does not work)  
-    } else {  
-        return glPage;//  (if it is a normal page item, it just returns itself)  
-    }  
-    glPage = null  
-}  
-
-var newRect = function(x, y, width, height) {
-    var l = 0;
-    var t = 1;
-    var r = 2;
-    var b = 3;
-
-    var rect = [];
-
-    rect[l] = x;
-    rect[t] = -y;
-    rect[r] = width + x;
-    rect[b] = -(height - rect[t]);
-
-    return rect;
-}
-
-/* create artboards */
-/* duplicate, rename, organize to layers */
-
-//var artboards = [];
-
 if(app.selection[0] != null) {
 } else {
     alert("You must have the object you want to duplicate selected.");
